@@ -1,3 +1,4 @@
+#dogfinderv2
 #import a bunch of libraries to do a bunch of things
 #requests to return requests from url, keys.py for personal api keys, json to read json returns
 import requests, keys, json, datetime
@@ -50,30 +51,38 @@ pet_data = pet_get_response_json["animals"]
 
 #the goal here is to iterate over pet_data for however long it is, and for each i pull out the dictionary pairing for url, name, description, published_at
 #set i=0 as a starting point for iterating. also, set up some variables outside of the while loop so that they stay "static"
+#also - doing some stuff with time. now object subtracts 5 minutes from current time, script runs every 5 minutes, so we're checking if any
+#dog has been posted in the last 5 minutes (with pet_now_obj >= now)
+pet_now = pet_data[0]["published_at"]
+pet_now_obj = datetime.datetime.strptime(pet_now, '%Y-%m-%dT%H:%M:%S+%f')
+current_time = datetime.datetime.now()
+now = current_time - datetime.timedelta(minutes=5)
 
 i = 0
-today = datetime.datetime.now().date()
-#email_create = open("email_text_{}.txt".format(today), "a+")
-email_create = open("email_text.txt", "a+")
-email_create.write('To:dogfinderbot@gmail.com\nFrom:dogfinderbot@gmail.com\nSubject: Dogs posted on {} \n \n'.format(today))
-email_create.close()
-#print (len(pet_data))
 
-while i < len(pet_data):
-        pet_timestamp = pet_data[i]["published_at"]
-        pet_timestamp_obj = datetime.datetime.strptime(pet_timestamp, '%Y-%m-%dT%H:%M:%S+%f')
-        pet_date = pet_timestamp_obj.date()
-        name = pet_data[i]["name"]
-        url = pet_data[i]["url"]
-        email_text = open("email_text.txt", "a")
-
-        if pet_date == today:
+if pet_now_obj >= now:
+        today = datetime.datetime.now().date()
+        #email_create = open("email_text_{}.txt".format(today), "a+")
+        email_create = open("email_text.txt", "a+")
+        email_create.write('To:dogfinderbot@gmail.com\nFrom:dogfinderbot@gmail.com\nSubject: NEW DOG ALERT \n \n')
+        email_create.close()
+        #print (len(pet_data))
+        
+        while i < len(pet_data):
+                pet_timestamp = pet_data[i]["published_at"]
+                pet_timestamp_obj = datetime.datetime.strptime(pet_timestamp, '%Y-%m-%dT%H:%M:%S+%f')
+                #pet_date = pet_timestamp_obj.date()
+                name = pet_data[i]["name"]
+                url = pet_data[i]["url"]
+                email_text = open("email_text.txt", "a")
+                
+                if pet_timestamp_obj >= now:
                 #print ('Dog number {}'.format(i))
                 #print ('Name: {}'.format(name))
                 #print ('Link: {}'.format(url))
                 #print ('Date: {}'.format(pet_date))
                 #print (pet_timestamp)
                 #print ()
-                email_text.write('Name - {}\nLink - {} \n \n'.format(name,url))
-                email_text.close()
-        i = i+1
+                        email_text.write('Name - {}\nLink - {} \n \n'.format(name,url))
+                        email_text.close()
+                i = i+1
