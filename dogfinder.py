@@ -55,7 +55,7 @@ pet_data = pet_get_response_json["animals"]
 #dog has been posted in the last 5 minutes (with pet_now_obj >= now)
 pet_now = pet_data[0]["published_at"]
 pet_now_obj = datetime.datetime.strptime(pet_now, '%Y-%m-%dT%H:%M:%S+%f')
-current_time = datetime.datetime.now()
+current_time = datetime.datetime.utcnow()
 now = current_time - datetime.timedelta(minutes=5)
 
 i = 0
